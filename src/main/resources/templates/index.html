@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(-45deg, #1e3c72, #2a5298, #4facfe, #00f2fe);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding-top: 40px;
+      color: #fff;
+      font-family: "Poppins", sans-serif;
+    }
+    @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    .weather-card { background: rgba(255,255,255,0.12); padding: 32px; border-radius: 22px; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(0,0,0,0.25); width: 100%; max-width: 780px; }
+    .big-temp { font-size: 58px; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .weather-icon { width: 130px; height: 130px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+    .forecast-scroll { overflow-x: auto; white-space: nowrap; padding-bottom: 10px; }
+    .forecast-card { display: inline-block; width: 150px; background: rgba(255,255,255,0.08); border-radius: 15px; padding: 14px; margin-right: 12px; text-align: center; }
+    .forecast-icon { width: 70px; height: 70px; }
+    .muted { color: rgba(255,255,255,0.85); }
+    .forecast-date { font-size: 0.85rem; white-space: normal; word-break: break-word; line-height: 1.2; min-height: 34px; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+<div class="weather-card">
+
+  <h2 class="text-center mb-4">🌤️ Advanced Weather App</h2>
+
+  <form action="/weather" method="get" class="input-group mb-4">
+    <input type="text" name="city" class="form-control form-control-lg" placeholder="Enter city name..." th:value="${city}">
+    <button class="btn btn-light btn-lg">Search</button>
+  </form>
+
+  <div th:if="${error != null}" class="alert alert-danger text-center" th:text="${error}"></div>
+
+  <div th:if="${weather != null}">
+
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h3 th:text="'Weather in ' + ${city}"></h3>
+        <p class="muted text-capitalize" th:text="${weather.weather[0].description}">description</p>
+        <h1 class="big-temp" th:text="${weather.main.temp} + '°C'">--°C</h1>
+        <p class="muted">Feels Like: <span th:text="${weather.main.feels_like}">--</span>°C</p>
+      </div>
+
+      <div>
+        <img class="weather-icon" th:src="'https://openweathermap.org/img/wn/' + ${weather.weather[0].icon} + '@4x.png'">
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="row text-center gx-3">
+      <div class="col-md-4 mt-3">
+        <h5>💨 Wind</h5>
+        <p class="muted" th:text="${wind} + ' m/s'">--</p>
+      </div>
+      <div class="col-md-4 mt-3">
+        <h5>🌡️ Humidity</h5>
+        <p class="muted" th:text="${humidity} + '%'">--</p>
+      </div>
+      <div class="col-md-4 mt-3">
+        <h5>🧭 Pressure</h5>
+        <p class="muted" th:text="${pressure} + ' hPa'">--</p>
+      </div>
+
+      <div class="col-md-6 mt-3">
+        <h5>🌅 Sunrise</h5>
+        <p class="muted" th:text="${sunrise}">--</p>
+      </div>
+
+      <div class="col-md-6 mt-3">
+        <h5>🌇 Sunset</h5>
+        <p class="muted" th:text="${sunset}">--</p>
+      </div>
+    </div>
+
+    <hr>
+
+    <h4 class="mb-2">📅 5-Day Forecast</h4>
+
+    <div class="forecast-scroll">
+      <div th:if="${forecast == null}" class="muted">No forecast available</div>
+
+      <div th:each="item : ${forecast.list}" class="forecast-card">
+        <div class="muted forecast-date" th:text="${item.dtTxt}">2025-11-18 12:00:00</div>
+
+        <img class="forecast-icon" th:src="'https://openweathermap.org/img/wn/' + ${item.weather[0].icon} + '@2x.png'">
+
+        <div class="fw-bold mt-1" th:text="${item.main.temp} + ' °C'">-- °C</div>
+
+        <div class="muted text-capitalize mt-1" th:text="${item.weather[0].description}">desc</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div th:if="${weather == null}" class="text-center muted mt-3">Enter a city name to see weather details.</div>
+
+</div>
+</body>
+</html>
